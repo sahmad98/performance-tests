@@ -38,29 +38,21 @@ void column_wise_access(int** array, int size) {
 }
 
 static void BM_row_wise_access(benchmark::State& state) {
+    int size = state.range(0);
+    int** arr = allocateArray(size);
     for (auto _ : state) {
-        state.PauseTiming();
-        int size = state.range(0);
-        int** arr = allocateArray(size);
-        state.ResumeTiming();
         row_wise_access(arr, size);
-        state.PauseTiming();
-        deallocateArray(arr, size);
-        state.ResumeTiming();
-    }	
+    }
+    deallocateArray(arr, size);
 }
 
 static void BM_column_wise_access(benchmark::State& state) {
+    int size = state.range(0);
+    int** arr = allocateArray(size);
     for (auto _ : state) {
-        state.PauseTiming();
-        int size = state.range(0);
-        int** arr = allocateArray(size);
-        state.ResumeTiming();
         column_wise_access(arr, size);
-        state.PauseTiming();
-        deallocateArray(arr, size);
-        state.ResumeTiming();
-    }	
+    }
+    deallocateArray(arr, size);
 }
 
 BENCHMARK(BM_row_wise_access)->Range(8, 8 << 10);
