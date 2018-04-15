@@ -2,10 +2,18 @@ cmake_minimum_required(VERSION 3.10)
 
 project(PerfTest)
 
+set(LOCAL "/usr/local/include")
 set(CMAKE_CXX_STANDARD 11)
 set(SOURCE ${PROJECT_SOURCE_DIR}/src)
 #set(EXECUTABLE_OUTPUT_PATH bin)
+include_directories(${LOCAL})
+
 
 add_executable(RowColumnAccess ${SOURCE}/array_access_test.cpp)
+target_link_libraries(RowColumnAccess PRIVATE "${LOCAL}/../lib/libbenchmark.a")
 add_executable(CPUPinning ${SOURCE}/cpu_pinning.cpp)
 add_executable(FileReadPerf ${SOURCE}/memory_mapped_io.cpp)
+add_executable(GoogleBench ${SOURCE}/google_benchmark.cpp)
+target_link_libraries(GoogleBench PRIVATE "${LOCAL}/../lib/libbenchmark.a")
+add_executable(CachePerf ${SOURCE}/cache_perf.cpp)
+target_link_libraries(CachePerf PRIVATE "${LOCAL}/../lib/libbenchmark.a")

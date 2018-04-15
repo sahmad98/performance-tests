@@ -1,45 +1,69 @@
 #include <iostream>
 #include <chrono>
-#include "benchmark.hpp"
+#include <benchmark/benchmark.h>
 
 using namespace std;
-#define ARRARY_SIZE 4096
 
-// Cache hits will occur in this case
-void row_wise_access(int** array) {
+int** allocateArray(uint64_t size) {
+    int** array = new int*[size];
+    for (int i =0; i<size; i++) {
+        array[i] = new int[size];
+    }
+    return array;
+}
+
+//Cache hit
+void row_wise_access(int** array, int size) {
     int result = 0;
-    for(int i=0; i<ARRARY_SIZE; i++)
-        for(int j=0; j<ARRARY_SIZE; j++) {
+    for(int i=0; i<size; i++)
+        for(int j=0; j<size; j++) {
             result += array[i][j];
         }
 }
 
-// Cache miss will occur in this case
-void column_wise_access(int** array) {
+void deallocateArray(int** arr, int size) {
+    for (int i =0; i<size; i++) {
+        auto temp = arr[i];
+        delete[] temp;
+    }
+}
+
+//Cache miss
+void column_wise_access(int** array, int size) {
     int result = 0;
-    for(int i=0; i<ARRARY_SIZE; i++)
-        for(int j=0; j<ARRARY_SIZE; j++) {
+    for(int i=0; i<size; i++)
+        for(int j=0; j<size; j++) {
             result += array[j][i];
         }
 }
 
-int main() {
-    int** array = new int*[ARRARY_SIZE];
-    for (int i =0; i<ARRARY_SIZE; i++) {
-        array[i] = new int[ARRARY_SIZE];
-    }
-
-    {
-        BENCHMARK_START;
-        row_wise_access(array);
-        BENCHMARK_STOP("ROW WISE ACCESS");
-    }
-    
-    {
-        BENCHMARK_START;
-        column_wise_access(array);
-        BENCHMARK_STOP("COLUMN WISE ACCESS");
-    }
+static void BM_row_wise_access(benchmark::State& state) {
+    for (auto _ : state) {
+        state.PauseTiming();
+        int size = state.range(0);
+        int** arr = allocateArray(size);
+        state.ResumeTiming();
+        row_wise_access(arr, size);
+        state.PauseTiming();
+        deallocateArray(arr, size);
+        state.ResumeTiming();
+    }	
 }
 
+static void BM_column_wise_access(benchmark::State& state) {
+    for (auto _ : state) {
+        state.PauseTiming();
+        int size = state.range(0);
+        int** arr = allocateArray(size);
+        state.ResumeTiming();
+        column_wise_access(arr, size);
+        state.PauseTiming();
+        deallocateArray(arr, size);
+        state.ResumeTiming();
+    }	
+}
 
+BENCHMARK(BM_row_wise_access)->Range(8, 8 << 10);
+BENCHMARK(BM_column_wise_access)->Range(8, 8 << 10);
+
+BENCHMARK_MAIN();
