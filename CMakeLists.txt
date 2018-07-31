@@ -25,3 +25,6 @@ add_executable(MiscPerf ${SOURCE}/misc_perf.cpp)
 target_link_libraries(MiscPerf PRIVATE "${LOCAL}/../lib/libbenchmark.a")
 add_executable(LockPerf ${SOURCE}/lock_benchmark.cpp)
 target_link_libraries(LockPerf PRIVATE "${LOCAL}/../lib/libbenchmark.a")
+
+add_executable(RuntimePolymorphism ${SOURCE}/virtual_functions.cpp)
+target_link_libraries(RuntimePolymorphism PRIVATE "${LOCAL}/../lib/libbenchmark.a")
