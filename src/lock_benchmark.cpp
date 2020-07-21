@@ -1,7 +1,7 @@
 #include <benchmark/benchmark.h>
 #include <atomic>
 
-static uint64_t lock_underlying = 0;
+uint32_t lock_underlying = 0;
 
 class SpinLock {
     std::atomic_flag locked = ATOMIC_FLAG_INIT ;
@@ -16,27 +16,27 @@ public:
 
 static SpinLock spinlock;
 
-void lock(uint64_t* underlying) {
+void lock(uint32_t* underlying) {
     do {} while(not __sync_bool_compare_and_swap(underlying, 0, 1));
 }
 
-void unlock(uint64_t* underlying) {
+void unlock(uint32_t* underlying) {
     do {} while(not __sync_bool_compare_and_swap(underlying, 1, 0));
 }
 
 void readModifyWrite(int* num) {
     lock(&lock_underlying);
-    for (int i=0; i<1000; i++) {
+    /*for (int i=0; i<1000; i++) {
         *num = *num + 1;
-    }
+    }*/
     unlock(&lock_underlying);
 }
 
 void readModifyWriteGccLock(int *num) {
     spinlock.lock();
-    for (int i=0; i<1000; i++) {
+    /*for (int i=0; i<1000; i++) {
         *num = *num + 1;
-    }
+    }*/
     spinlock.unlock();
 }
 

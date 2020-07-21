@@ -1,6 +1,7 @@
 #include <iostream>
 #include <chrono>
 #include <benchmark/benchmark.h>
+#include <vector>
 
 using namespace std;
 
@@ -15,6 +16,7 @@ int** allocateArray(uint64_t size) {
 //Cache hit
 void row_wise_access(int** array, int size) {
     int result = 0;
+    // loop
     for(int i=0; i<size; i++)
         for(int j=0; j<size; j++) {
             result += array[i][j];
@@ -31,6 +33,7 @@ void deallocateArray(int** arr, int size) {
 //Cache miss
 void column_wise_access(int** array, int size) {
     int result = 0;
+    // loop
     for(int i=0; i<size; i++)
         for(int j=0; j<size; j++) {
             result += array[j][i];
@@ -41,7 +44,8 @@ static void BM_row_wise_access(benchmark::State& state) {
     int size = state.range(0);
     int** arr = allocateArray(size);
     for (auto _ : state) {
-        row_wise_access(arr, size);
+	    row_wise_access(arr, size);
+	    benchmark::ClobberMemory();
     }
     deallocateArray(arr, size);
 }
