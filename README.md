@@ -1,4 +1,4 @@
-# perf_test
+# performance-tests
 
 ## Performance Benchmarking
   - [Array Access Time benchmarking](src/array_access_test.cpp)
